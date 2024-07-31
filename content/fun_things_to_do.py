@@ -13,11 +13,12 @@ class FunActivity(BaseModel):
         return {"title": self.title, "description": self.description, "date": self.date, "location": self.location, "ticket": self.ticket}
 
 class ActivityList(BaseModel):
-    summary: str = Field(description="Catchy one liner summary of all the activities")
-    activities: List[FunActivity] = Field(description="List of fun activities")
+    summary: Optional[str] = Field(description="Catchy one liner summary of all the activities")
+    activities: Optional[List[FunActivity]] = Field(description="List of fun activities")
     source: str = None
     
     def to_dict(self) -> Dict[str, Any]:
-        return {"summary": self.summary, "activities": [a.to_dict() for a in self.activities], "source": self.source}
+        activities_data = [a.to_dict() for a in self.activities] if self.activities is not None else []
+        return {"summary": self.summary, "activities": activities_data, "source": self.source}
     
 activity_parser = PydanticOutputParser(pydantic_object=ActivityList)

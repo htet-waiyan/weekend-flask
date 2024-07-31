@@ -11,7 +11,10 @@ load_dotenv()
 def get_fun_things_to_do() -> ActivityList:
     print(os.getenv("OPENAI_API_KEY"))
     template = """
-        Given the information {things_to_do} about fun things to do, events and activities happening in Singapore, I want you to provide the answer in
+        Given the information {things_to_do} about fun things to do, events and activities happening in Singapore.
+        Look out for the text "New events in Singapore this week". Information about fun activities should follow after this text.
+        
+        I want you to provide the list of activties in
         
         1.) Catchy one liner summary of all the activities
         2.) List of fun activities in
@@ -30,19 +33,19 @@ def get_fun_things_to_do() -> ActivityList:
         partial_variables={"format_instructions": activity_parser.get_format_instructions()}
     )
     
-    llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+    llm = ChatOpenAI(temperature=0, model="gpt-4o")
     chain = event_template | llm | activity_parser
     
-    urls = ["https://thesmartlocal.com/read/things-to-do-this-weekend-singapore/"]
+    urls = ["https://thehoneycombers.com/singapore/things-to-do-in-singapore/"]
     contents = scrape_urls(urls)
     things_to_do = "\n".join([c for c in contents])
     
-    # print(f"things to do {things_to_do}")
+    print(f"things to do {things_to_do}")
     
     print("---------LLM outputs----------")
     
     response: ActivityList = chain.invoke(input={"things_to_do": things_to_do})
-    response.source = "https://thesmartlocal.com/"
+    response.source = "https://thehoneycombers.com/singapore/things-to-do-in-singapore/"
     print(response)
     return response
     
